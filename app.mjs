@@ -1,14 +1,24 @@
 import express from 'express';
+import path from 'path';
 
 const app = express();
+const __dirname = path.resolve();
+app.use(express.static('public'));
+
+// const myLogeer = (req,res,next) => {
+//   console.log("Middleware Log 1")
+//   next();
+// }
+// const myLogeer2 = (req,res,next) => {
+//   console.log("Middleware Log 2")
+//   next();
+// }
+
+// app.use(myLogeer)
+// app.use(myLogeer2)
 
 app.get('/', (req, res) => {
-  const photo = {
-    id:1,
-    name:"Pahoto Name",
-    description: "Photo description"
-  }
-    res.send(photo);
+  res.sendFile(path.join(__dirname, "temp/index.html"))
 });
 
 const port = 3000;
