@@ -1,7 +1,13 @@
 import express from 'express';
 import path from 'path';
+import ejs from 'ejs';
 
 const app = express();
+
+//Template Engine
+app.set('view engine', 'ejs');
+
+//Middlewares
 const __dirname = path.resolve();
 app.use(express.static('public'));
 
@@ -17,8 +23,15 @@ app.use(express.static('public'));
 // app.use(myLogeer)
 // app.use(myLogeer2)
 
+//Routes
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, "temp/index.html"))
+  res.render('index');
+});
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+app.get('/add', (req, res) => {
+  res.render('add');
 });
 
 const port = 3000;
