@@ -23,6 +23,7 @@ mongoose.set('strictQuery', false); //Required for 'mongoose.connect()'
 mongoose.connect('mongodb://localhost/pcat-test-db', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  //useFindAndModify: false,
 });
 
 //Template Engine
@@ -33,7 +34,9 @@ app.use(express.static('public')); //We specify the location of static files
 app.use(express.urlencoded({ extended: true })); //encode from url
 app.use(express.json()); //converting the code to json format
 app.use(fileUpload());
-app.use(methodOverride('_method'));
+app.use(methodOverride('_method', {
+  methods:['POST','GET']
+}));
 
 //Routes
 app.get('/', async (req, res) => {
@@ -67,6 +70,7 @@ app.get('/about', (req, res) => {
 app.get('/add', (req, res) => {
   res.render('add');
 });
+
 
 app.post('/photos', async (req, res) => {
   //console.log(req.files.image)
@@ -108,9 +112,22 @@ app.put('/photos/:id', async (req, res) => {
   photo.image = '/uploads/' + uploadeImage.name;
   //Çektiğim fineOne sorgusunda yaptığım değişiklikleri kayıt ettim.
   photo.save();
-  //Görsele özel olan sayfaya yönlendirir.
+  //Redirects to the page specific to the image
   res.redirect(`/photos/${req.params.id}`);
 });
+
+app.delete('/photos/:id', async (req,res) => {
+  //Retrieves data from the database with the corresponding "ID".
+  const photo = await Photo.findOne({_id: req.params.id});
+  //Finds the corresponding file directory
+  let deletedImage = __dirname + '/public' + photo.image;
+  fs.unlinkSync(deletedImage); //Deletes the related file
+  //Delete from Database
+  await Photo.findByIdAndRemove(req.params.id);
+  //Redirects to homepage
+  res.redirect('/');
+
+})
 
 const port = 3000;
 app.listen(port, () => {
