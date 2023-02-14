@@ -11,6 +11,8 @@ app.set('view engine', 'ejs');
 const __dirname = path.resolve();
 app.use(express.static('public'));
 
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 // const myLogeer = (req,res,next) => {
 //   console.log("Middleware Log 1")
 //   next();
@@ -32,6 +34,10 @@ app.get('/about', (req, res) => {
 });
 app.get('/add', (req, res) => {
   res.render('add');
+});
+app.post('/photos', (req, res) => {
+  console.log(req.body);
+  res.redirect('/')
 });
 
 const port = 3000;
