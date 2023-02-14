@@ -1,33 +1,35 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import path from 'path';
 import ejs from 'ejs';
+import Photo from './models/Photo.mjs';
 
+//Start Express
 const app = express();
 
+//Connect to DataBase
+mongoose.set('strictQuery', false); //Required for 'mongoose.connect()'
+mongoose.connect('mongodb://localhost/pcat-test-db', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 //Template Engine
-app.set('view engine', 'ejs');
+app.set('view engine', 'ejs'); //We specify what we are using for the view engine
 
 //Middlewares
-const __dirname = path.resolve();
-app.use(express.static('public'));
 
-app.use(express.urlencoded({extended: true}))
-app.use(express.json())
-// const myLogeer = (req,res,next) => {
-//   console.log("Middleware Log 1")
-//   next();
-// }
-// const myLogeer2 = (req,res,next) => {
-//   console.log("Middleware Log 2")
-//   next();
-// }
+app.use(express.static('public')); //We specify the location of static files
 
-// app.use(myLogeer)
-// app.use(myLogeer2)
+app.use(express.urlencoded({ extended: true })); //encode from url
+app.use(express.json()); //converting the code to json format
 
 //Routes
-app.get('/', (req, res) => {
-  res.render('index');
+app.get('/', async (req, res) => {
+  const photos = await Photo.find({})
+  res.render('index',{
+    photos
+  });
 });
 app.get('/about', (req, res) => {
   res.render('about');
@@ -35,9 +37,9 @@ app.get('/about', (req, res) => {
 app.get('/add', (req, res) => {
   res.render('add');
 });
-app.post('/photos', (req, res) => {
-  console.log(req.body);
-  res.redirect('/')
+app.post('/photos', async (req, res) => {
+  await Photo.create(req.body)
+  res.redirect('/'); //Redirects to homepage
 });
 
 const port = 3000;
