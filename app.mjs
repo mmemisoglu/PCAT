@@ -17,7 +17,11 @@ mongoose.connect('mongodb://localhost/pcat-test-db', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   //useFindAndModify: false,
-});
+}).then(()=>{
+  console.log('DB CONNECTED!');
+}).catch((err)=>{
+  console.log(err);
+})
 
 //Template Engine
 app.set('view engine', 'ejs'); //We specify what we are using for the view engine
